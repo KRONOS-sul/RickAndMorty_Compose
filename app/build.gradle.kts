@@ -19,7 +19,19 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
     buildTypes {
+        debug {
+            buildConfigField(
+                "String",
+                "BASE_URL",
+                "\"https://rickandmortyapi.com/api/\""
+            )
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -35,12 +47,29 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
+
+    //Glide
+    implementation (libs.compose)
+
+    //Okhttp https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+    implementation(libs.okhttp)
+    implementation(libs.okhttp3.logging.interceptor)
+
+    //Retrofit https://mvnrepository.com/artifact/com.squareup.retrofit2/retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.kotlinx.serialization.json)
+
+    //Koin https://mvnrepository.com/artifact/io.insert-koin/koin-android
+    implementation(libs.koin.android)
+    //Koin compose https://insert-koin.io/docs/quickstart/android-compose/
+    implementation(libs.koin.compose)
+
+    //Coroutines https://developer.android.com/kotlin/coroutines
+    implementation(libs.kotlinx.coroutines.android)
 
     //Material https://developer.android.com/jetpack/androidx/releases/compose-material
     implementation(libs.androidx.material)

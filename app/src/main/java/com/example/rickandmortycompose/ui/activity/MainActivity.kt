@@ -3,7 +3,6 @@ package com.example.rickandmortycompose.ui.activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,17 +22,18 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.rickandmortycompose.R
-import com.example.rickandmortycompose.ui.screens.CharacterScreen
-import com.example.rickandmortycompose.ui.screens.EpisodeScreen
 import com.example.rickandmortycompose.ui.screens.Screens
+import com.example.rickandmortycompose.ui.screens.character.CharacterScreen
+import com.example.rickandmortycompose.ui.screens.characterDetail.CharacterDetailScreen
+import com.example.rickandmortycompose.ui.screens.episode.EpisodeScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -46,7 +46,39 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+fun Design() {
+    val navController = rememberNavController()
+
+    Scaffold(
+        topBar = { TopBar(navController) },
+        bottomBar = { BottomBar(navController) }) { innerPadding ->
+
+        NavHost(
+            navController,
+            startDestination = Screens.Character.route,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(Screens.Character.route) { CharacterScreen(navController = navController) }
+            composable(Screens.Episode.route) { EpisodeScreen() }
+            composable(Screens.DetailCharacter.route) { backStackEntry ->
+                val characterId = backStackEntry.arguments?.getString("characterId")
+                    ?.toInt()   //получение аргумента из предыдущего экрана
+                if (characterId != null) {
+                    CharacterDetailScreen(characterId = characterId)
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun TopBar(navController: NavHostController) {
+    val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
+    val screenName = when (currentDestination) {
+        Screens.Character.route -> Screens.Character.title
+        Screens.Episode.route -> Screens.Episode.title
+        else -> ""
+    }
     val fonts = FontFamily(
         Font(R.font.oswald_medium, FontWeight.Medium),
         Font(R.font.oswald_regular, FontWeight.Normal),
@@ -60,33 +92,12 @@ fun TopBar(navController: NavHostController) {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.Bottom
             ) {
+
                 Text(
-                    text = "Character",
+                    text = screenName,
                     style = TextStyle(fontFamily = fonts, fontWeight = FontWeight.Medium),
                     fontSize = 24.sp,
-                    modifier = Modifier
-                        .clickable {
-                            navController.navigate(Screens.Character.route) {
-                                popUpTo(navController.graph.startDestinationId) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }
-                        .padding(12.dp)
-                )
-                Text(
-                    text = "Episode",
-                    style = TextStyle(fontFamily = fonts, fontWeight = FontWeight.Normal),
-                    fontSize = 24.sp,
-                    modifier = Modifier
-                        .clickable {
-                            navController.navigate(Screens.Episode.route) {
-                                popUpTo(navController.graph.startDestinationId) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }
-                        .padding(12.dp)
+                    modifier = Modifier.padding(12.dp)
                 )
             }
         }, backgroundColor = Color.White
@@ -117,35 +128,11 @@ fun BottomBar(navController: NavHostController) {
                         }
                         launchSingleTop =
                             true  // Защита от создания нескольких одинаковых экранов в стек навигации
-                        restoreState = true     // Восстановление состояния экрана при переходе
+                        restoreState =
+                            true     // Восстановление состояния экрана при переходе
                     }
                 }
             )
         }
     }
-}
-
-@Composable
-fun Design() {
-    val navController = rememberNavController()
-
-    Scaffold(
-        topBar = { TopBar(navController) },
-        bottomBar = { BottomBar(navController) }) { innerPadding ->
-
-        NavHost(
-            navController,
-            startDestination = Screens.Character.route,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable(Screens.Character.route) { CharacterScreen() }
-            composable(Screens.Episode.route) { EpisodeScreen() }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun Preview() {
-    TopBar(rememberNavController())
 }
