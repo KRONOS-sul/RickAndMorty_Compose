@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -86,7 +90,7 @@ fun CharacterItem(characters: CharacterResponse, onClick: () -> Unit) {
         Row {
             GlideImage(
                 model = characters.image,
-                contentDescription = "Character Image",
+                contentDescription = "Character Image"
             )
             Log.d("shamal", "Image URL: ${characters.image}")
             Spacer(modifier = Modifier.padding(12.dp, 0.dp))
@@ -102,10 +106,38 @@ fun CharacterItem(characters: CharacterResponse, onClick: () -> Unit) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    val statusColor = when (characters.status) {
+                        "Alive" -> Color.Green
+                        "Dead" -> Color.Red
+                        else -> Color.Gray
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(statusColor, CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = characters.status.replaceFirstChar { it.uppercase() },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White
+                    )
+                    Text(
+                        text = " - " + characters.species,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White
+                    )
+                }
+                Spacer(modifier = Modifier.padding(0.dp, 8.dp))
+                Text(text = "Last known location:", color = Color.LightGray)
                 Text(
-                    text = characters.type,
+                    text = characters.location.name
+                        .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }

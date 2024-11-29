@@ -77,6 +77,7 @@ fun TopBar(navController: NavHostController) {
     val screenName = when (currentDestination) {
         Screens.Character.route -> Screens.Character.title
         Screens.Episode.route -> Screens.Episode.title
+        Screens.DetailCharacter.route -> Screens.DetailCharacter.title
         else -> ""
     }
     val fonts = FontFamily(
@@ -92,7 +93,6 @@ fun TopBar(navController: NavHostController) {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.Bottom
             ) {
-
                 Text(
                     text = screenName,
                     style = TextStyle(fontFamily = fonts, fontWeight = FontWeight.Medium),

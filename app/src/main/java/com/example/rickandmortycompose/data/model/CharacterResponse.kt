@@ -14,16 +14,16 @@ data class CharacterResponse(
     val name: String,
     @SerializedName("status")
     val status: String,
-    @SerializedName("type")
-    val type: String,
     @SerializedName("image")
     val image: String,
-//    @SerializedName("location")
-//    val location: Location,
+    @SerializedName("species")
+    val species: String,
+    @SerializedName("location")
+    val location: Location,
 
 )
 
 data class Location(
     @SerializedName("name")
-    val name: String
+    val name: String,
 )
