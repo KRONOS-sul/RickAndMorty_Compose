@@ -51,6 +51,10 @@ android {
 
 dependencies {
 
+    //Paging 3 https://developer.android.com/topic/libraries/architecture/paging/v3-overview#kts
+    implementation(libs.androidx.paging.runtime.ktx)
+    implementation(libs.androidx.paging.compose)
+
     //Glide
     implementation (libs.compose)
 

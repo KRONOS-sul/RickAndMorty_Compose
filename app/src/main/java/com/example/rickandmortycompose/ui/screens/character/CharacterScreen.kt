@@ -17,9 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +29,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.rickandmortycompose.R
@@ -43,31 +42,29 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CharacterScreen(
     navController: NavController,
-    viewModel: CharactersViewModel = koinViewModel(),  //koinViewModel() - для создания объекта CharacterViewModel
+    viewModel: CharactersViewModel = koinViewModel()  //koinViewModel() - для создания объекта CharacterViewModel
 ) {
-
-    val characters by viewModel.charactersStateFlow.collectAsState()
+    val characters = viewModel.charactersPagingFlow.collectAsLazyPagingItems()
     //collectAsState() - для обновления экрана при изменении данных
 
-    LaunchedEffect(Unit) {  //LaunchedEffect - для запуска один раз при создании экрана
-        viewModel.getAllCharacters()
-    }
     CharacterList(characters = characters, navController = navController)
 }
 
 @Composable
-fun CharacterList(characters: List<CharacterResponse>, navController: NavController) {
+fun CharacterList(characters: LazyPagingItems<CharacterResponse>, navController: NavController) {
     LazyColumn(
         modifier = Modifier
             .background(Ink)
             .padding(16.dp)
     ) {
-        items(characters.size) {
-            CharacterItem(
-                characters = characters[it],
-                onClick = {
-                    navController.navigate("detail/${characters[it].id}")
-                })
+        items(characters.itemCount) { index ->
+            val character = characters[index]
+            character?.let {
+                CharacterItem(characters = it,
+                    onClick = {
+                        navController.navigate("detail/${it.id}")
+                    })
+            }
         }
     }
 }
